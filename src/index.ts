@@ -1,5 +1,6 @@
 import express from "express";
 import { handlerReadiness } from "./api/readiness.js";
+import { handlerValidateChirp } from "./api/validate.js";
 import {
   middlewareLogResponses,
   middlewareMetricsInc,
@@ -17,6 +18,7 @@ app.get("/admin/metrics", handlerMetrics);
 app.post("/admin/reset", handlerReset);
 
 app.get("/api/healthz", handlerReadiness);
+app.post("/api/validate_chirp", handlerValidateChirp);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
