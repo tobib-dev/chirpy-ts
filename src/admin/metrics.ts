@@ -2,8 +2,7 @@ import type { Request, Response } from "express";
 import { config } from "../config.js";
 
 export async function handlerMetrics(_: Request, res: Response) {
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.write(`
+  res.send(`
     <html>
       <body>
         <h1>Welcome, Chirpy Admin</h1>
@@ -11,5 +10,6 @@ export async function handlerMetrics(_: Request, res: Response) {
       </body>
     </html>
   `);
+  res.set("Content-Type", "text/html; charset=utf-8");
   res.end();
 }
