@@ -8,23 +8,21 @@ export async function handlerValidateChirps(req: Request, res: Response) {
 
   const params: parameters = req.body;
   const maxChirpLength = 140;
-  const profaneWords: string[] = ["kerfuffle", "sharbert", "fornax"];
+  const badWords: string[] = ["kerfuffle", "sharbert", "fornax"];
   if (params.body.length > maxChirpLength) {
     respondWithError(res, 400, "Chirp is too long");
     return;
   }
-  const splitBody = params.body.split(" ");
 
-  for (let i = 0; i < splitBody.length; i++) {
-    for (const word of profaneWords) {
-      if (splitBody[i].toLowerCase() === word) {
-        console.log(word);
-        splitBody[i] = "****";
-      }
+  const words = params.body.split(" ");
+
+  for (let i = 0; i < words.length; i++) {
+    if (badWords.includes(words[i].toLowerCase())) {
+      words[i] = "****";
     }
   }
 
-  const newBody = splitBody.join(" ");
+  const newBody = words.join(" ");
 
   respondWithJSON(res, 200, {
     cleanedBody: newBody,
