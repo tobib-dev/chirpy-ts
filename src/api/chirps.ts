@@ -10,8 +10,9 @@ export async function handlerValidateChirps(req: Request, res: Response) {
   const maxChirpLength = 140;
   const badWords: string[] = ["kerfuffle", "sharbert", "fornax"];
   if (params.body.length > maxChirpLength) {
-    respondWithError(res, 400, "Chirp is too long");
-    return;
+    //respondWithError(res, 400, "Chirp is too long");
+    throw new Error("Something went wrong on our end");
+    //return;
   }
 
   const words = params.body.split(" ");
