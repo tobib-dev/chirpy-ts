@@ -16,8 +16,12 @@ app.use(middlewareLogResponses);
 app.use(express.json());
 app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 
-app.get("/admin/metrics", handlerMetrics);
-app.post("/admin/reset", handlerReset);
+app.get("/admin/metrics", (req, res, next) => {
+  Promise.resolve(handlerMetrics(req, res)).catch(next);
+});
+app.post("/admin/reset", (req, res, next) => {
+  Promise.resolve(handlerReset(req, res)).catch(next);
+});
 
 app.get("/api/healthz", (req, res, next) => {
   Promise.resolve(handlerReadiness(req, res)).catch(next);
