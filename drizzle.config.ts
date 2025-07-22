@@ -1,10 +1,11 @@
 import { defineConfig } from "drizzle-kit";
+import { config } from "./src/config.js";
 
 export default defineConfig({
-  schema: "src/<path_to_schema>",
-  out: "src/<path_to_generated_files>",
+  schema: "src/db",
+  out: "src/db",
   dialect: "postgresql",
   dbCredentials: {
-    url: "your_connection_string",
+    url: config.dbURL,
   },
 });
