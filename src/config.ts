@@ -1,18 +1,19 @@
-import process from "node:process";
-
 type APIConfig = {
   fileserverHits: number;
   dbURL: string;
 };
 
-function envOrThrow(key: string | undefined) {
-  if (key === undefined || key === "") {
-    throw new Error(`${key} is undefined or empty`);
+process.loadEnvFile();
+
+function envOrThrow(key: string) {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Env ${key} is not set`);
   }
-  return key;
+  return value;
 }
 
 export const config: APIConfig = {
   fileserverHits: 0,
-  dbURL: envOrThrow(process.env.DB_URL),
+  dbURL: envOrThrow("DB_URL"),
 };
