@@ -5,6 +5,11 @@ const migrationConfig: MigrationConfig = {
   migrationsFolder: path.join(process.cwd(), "src", "db", "migrations"),
 };
 
+type Config = {
+  api: APIConfig;
+  db: DBConfig;
+};
+
 type DBConfig = {
   url: string;
   migrationConfig: MigrationConfig;
@@ -12,7 +17,7 @@ type DBConfig = {
 
 type APIConfig = {
   fileserverHits: number;
-  db: DBConfig;
+  port: number;
   platform: string;
 };
 
@@ -26,13 +31,14 @@ function envOrThrow(key: string) {
   return value;
 }
 
-export const dbCfg: DBConfig = {
-  url: envOrThrow("DB_URL"),
-  migrationConfig: migrationConfig,
-};
-
-export const config: APIConfig = {
-  fileserverHits: 0,
-  db: dbCfg,
-  platform: envOrThrow("PLATFORM"),
+export const config: Config = {
+  api: {
+    fileserverHits: 0,
+    port: Number(envOrThrow("PORT")),
+    platform: envOrThrow("PLATFORM"),
+  },
+  db: {
+    url: envOrThrow("DB_URL"),
+    migrationConfig: migrationConfig,
+  },
 };

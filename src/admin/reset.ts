@@ -1,15 +1,15 @@
 import type { Request, Response } from "express";
 import { config } from "../config.js";
-import { respondWithError } from "../api/json.js";
-import { deleteUsers } from "../db/queries/users.js";
+import { reset } from "../db/queries/users.js";
+import { ForbiddenError } from "../api/errors.js";
 
 export async function handlerReset(_: Request, res: Response) {
-  if (config.platform !== "dev") {
-    respondWithError(res, 403, "Reset can only be executed in DEV");
+  if (config.api.platform !== "dev") {
+    console.log(config.api.platform);
+    throw new ForbiddenError("Reset is only allowed in dev environment,");
   }
-
-  config.fileserverHits = 0;
+  config.api.fileserverHits = 0;
+  await reset();
   res.write("Hits reset to 0");
-  deleteUsers();
   res.end();
 }
