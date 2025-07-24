@@ -1,7 +1,8 @@
 import { MigrationConfig } from "drizzle-orm/migrator";
+import path from "path";
 
 const migrationConfig: MigrationConfig = {
-  migrationsFolder: "./db/migrations",
+  migrationsFolder: path.join(process.cwd(), "src", "db", "migrations"),
 };
 
 type DBConfig = {

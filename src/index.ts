@@ -8,6 +8,7 @@ import {
 } from "./api/middleware.js";
 import { handlerMetrics } from "./admin/metrics.js";
 import { handlerReset } from "./admin/reset.js";
+import { handlerCreateUser } from "./api/users.js";
 
 const app = express();
 const PORT = 8080;
@@ -29,6 +30,11 @@ app.get("/api/healthz", (req, res, next) => {
 app.post("/api/validate_chirp", (req, res, next) => {
   Promise.resolve(handlerValidateChirps(req, res)).catch(next);
 });
+
+app.post("/api/users", (req, res, next) => {
+  Promise.resolve(handlerCreateUser(req, res)).catch(next);
+});
+
 app.use(middlewareErrorHandler);
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
