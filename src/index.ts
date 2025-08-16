@@ -8,7 +8,11 @@ import {
 import { handlerMetrics } from "./admin/metrics.js";
 import { handlerReset } from "./admin/reset.js";
 import { handlerCreateUser } from "./api/users.js";
-import { handlerCreateChirp, handlerGetAllChirps } from "./api/chirps.js";
+import {
+  handlerCreateChirp,
+  handlerGetAllChirps,
+  handlerGetChirp,
+} from "./api/chirps.js";
 
 const app = express();
 const PORT = 8080;
@@ -38,6 +42,10 @@ app.post("/api/chirps", (req, res, next) => {
 
 app.get("/api/chirps", (req, res, next) => {
   Promise.resolve(handlerGetAllChirps(req, res)).catch(next);
+});
+
+app.get("/api/chirps/:chirpID", (req, res, next) => {
+  Promise.resolve(handlerGetChirp(req, res)).catch(next);
 });
 
 app.use(middlewareErrorHandler);

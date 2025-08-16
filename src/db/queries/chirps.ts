@@ -16,5 +16,6 @@ export async function getChirps() {
 }
 
 export async function getChirp(id: string) {
-  return db.select().from(chirps).where(eq(chirps.id, id));
+  const [result] = await db.select().from(chirps).where(eq(chirps.id, id));
+  return result;
 }
