@@ -9,3 +9,8 @@ export async function createChirp(chirp: NewChirp) {
 export async function reset() {
   await db.delete(chirps);
 }
+
+export async function getChirps() {
+  const [result] = await db.select().from(chirps);
+  return result;
+}
