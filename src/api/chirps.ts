@@ -2,18 +2,17 @@ import { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "./errors.js";
 import { createChirp } from "../db/queries/chirps.js";
-import { createDeflate } from "node:zlib";
 
-function validateChirps(chirp: string) {
+function validateChirps(body: string) {
   const maxChirpLength = 140;
   const badWords: string[] = ["kerfuffle", "sharbert", "fornax"];
-  if (chirp.length > maxChirpLength) {
+  if (body.length > maxChirpLength) {
     throw new BadRequestError(
       `Chirp is too long. Max length is ${maxChirpLength}`,
     );
   }
 
-  const words = chirp.split(" ");
+  const words = body.split(" ");
 
   for (let i = 0; i < words.length; i++) {
     if (badWords.includes(words[i].toLowerCase())) {
@@ -51,11 +50,5 @@ export async function handlerCreateChirp(req: Request, res: Response) {
     throw new Error("Could not create chirp");
   }
 
-  respondWithJSON(res, 201, {
-    id: chirp.id,
-    body: chirp.body,
-    userId: chirp.userId,
-    createdAt: chirp.createdAt,
-    updatedAt: chirp.updatedAt,
-  });
+  respondWithJSON(res, 201, chirp);
 }
