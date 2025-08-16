@@ -12,9 +12,6 @@ export async function reset() {
 }
 
 export async function getChirps() {
-  const [result] = await db
-    .select()
-    .from(chirps)
-    .orderBy(asc(chirps.createdAt));
+  const result = await db.select().from(chirps).orderBy(asc(chirps.createdAt));
   return result;
 }
