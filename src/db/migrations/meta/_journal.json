@@ -8,6 +8,20 @@
       "when": 1753378838230,
       "tag": "0000_reflective_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1755369997979,
+      "tag": "0001_absurd_titanium_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1755370614516,
+      "tag": "0002_thin_malice",
+      "breakpoints": true
     }
   ]
 }
