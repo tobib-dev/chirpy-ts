@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { hashPassword, checkPasswordHash, makeJWT, validateJWT } from "./auth";
-import { randomUUID } from "crypto";
+import { UnauthorizedError } from "./api/errors.js";
 
 describe("Password Hashing", () => {
   const password1 = "correctPassword123!";
@@ -19,24 +19,50 @@ describe("Password Hashing", () => {
   });
 
   it("should return false for the wrong password", async () => {
+    const result = await checkPasswordHash("wrongPassword", hash1);
+    expect(result).toBe(false);
+  });
+
+  it("should return false when password doesn't match a different hash", async () => {
     const result = await checkPasswordHash(password1, hash2);
+    expect(result).toBe(false);
+  });
+
+  it("should return false for an empty password", async () => {
+    const result = await checkPasswordHash("", hash1);
+    expect(result).toBe(false);
+  });
+
+  it("should return false for an invalid hash", async () => {
+    const result = await checkPasswordHash(password1, "invalidhash");
     expect(result).toBe(false);
   });
 });
 
-describe("Create JWT", () => {
-  const userId1 = randomUUID();
-  const userId2 = randomUUID();
-  let jwt1: string;
-  let jwt2: string;
+describe("JWT Functions", () => {
+  const secret = "secret";
+  const wrongSecret = "wrong_secret";
+  const userID = "some-unique-user-id";
+  let validToken: string;
 
   beforeAll(async () => {
-    jwt1 = makeJWT(userId1, 300, "supersecret");
-    //jwt2 = await makeJWT(userId2, hash2);
+    validToken = makeJWT(userID, 3600, secret);
   });
 
-  it("should return the right user id for the correct JWT", async () => {
-    const result = validateJWT(jwt1, "supersecret");
-    expect(result).toBe(userId1);
+  it("should validate a vald token", async () => {
+    const result = validateJWT(validToken, secret);
+    expect(result).toBe(userID);
+  });
+
+  it("should throw an error for an invalid token string", () => {
+    expect(() => validateJWT("invalid.token.string", secret)).toThrow(
+      UnauthorizedError,
+    );
+  });
+
+  it("should throw an error when the token is signed with a wrong secret", () => {
+    expect(() => validateJWT(validToken, wrongSecret)).toThrow(
+      UnauthorizedError,
+    );
   });
 });
