@@ -20,3 +20,11 @@ export function makeJWT(userID: string, expiresIn: number, secret: string) {
   };
   return jwt.sign(load, secret, { expiresIn });
 }
+
+export function validateJWT(tokenString: string, secret: string) {
+  const { load } = jwt.verify(tokenString, secret) as { load: payload };
+  if (!load.exp || load.exp < Math.floor(Date.now() / 1000)) {
+    throw new Error("token invalid or expired");
+  }
+  return load.sub;
+}
