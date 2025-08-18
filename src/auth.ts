@@ -18,13 +18,15 @@ export function makeJWT(userID: string, expiresIn: number, secret: string) {
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + expiresIn,
   };
-  return jwt.sign(load, secret, { expiresIn });
+  return jwt.sign(load, secret);
 }
 
 export function validateJWT(tokenString: string, secret: string) {
-  const { load } = jwt.verify(tokenString, secret) as { load: payload };
-  if (!load.exp || load.exp < Math.floor(Date.now() / 1000)) {
+  let decoded;
+  try {
+    decoded = jwt.verify(tokenString, secret) as JwtPayload;
+  } catch (error) {
     throw new Error("token invalid or expired");
   }
-  return load.sub;
+  return decoded.sub;
 }
