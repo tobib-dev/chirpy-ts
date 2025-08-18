@@ -13,6 +13,7 @@ import {
   handlerGetAllChirps,
   handlerGetChirp,
 } from "./api/chirps.js";
+import { handlerLogin } from "./api/login.js";
 
 const app = express();
 const PORT = 8080;
@@ -34,6 +35,10 @@ app.get("/api/healthz", (req, res, next) => {
 
 app.post("/api/users", (req, res, next) => {
   Promise.resolve(handlerCreateUser(req, res)).catch(next);
+});
+
+app.post("/api/login", (req, res, next) => {
+  Promise.resolve(handlerLogin(req, res)).catch(next);
 });
 
 app.post("/api/chirps", (req, res, next) => {

@@ -4,6 +4,7 @@ import { NewUser } from "../db/schema.js";
 import { respondWithError, respondWithJSON } from "./json.js";
 import { BadRequestError } from "./errors.js";
 import { hashPassword } from "./auth.js";
+import { hash } from "bcrypt";
 
 export async function handlerCreateUser(req: Request, res: Response) {
   type Parameters = {
@@ -28,6 +29,7 @@ export async function handlerCreateUser(req: Request, res: Response) {
 
   const hashedPassword = hashPassword(params.password);
 
+  console.log(hashedPassword);
   if (!hashedPassword) {
     respondWithError(res, 500, "Failed to hash password");
     return;
