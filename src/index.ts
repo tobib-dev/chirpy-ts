@@ -13,7 +13,7 @@ import {
   handlerGetAllChirps,
   handlerGetChirp,
 } from "./api/chirps.js";
-import { handlerLogin } from "./api/login.js";
+import { handlerLogin } from "./api/auth.js";
 
 const app = express();
 const PORT = 8080;

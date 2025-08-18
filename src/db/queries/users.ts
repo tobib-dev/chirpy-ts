@@ -16,9 +16,6 @@ export async function reset() {
 }
 
 export async function getUserByEmail(email: string) {
-  const rows = await db.select().from(users).where(eq(users.email, email));
-  if (rows.length === 0) {
-    return;
-  }
-  return rows[0];
+  const [result] = await db.select().from(users).where(eq(users.email, email));
+  return result;
 }

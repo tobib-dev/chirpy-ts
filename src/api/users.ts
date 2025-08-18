@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { createUser } from "../db/queries/users.js";
 import { NewUser } from "../db/schema.js";
-import { respondWithError, respondWithJSON } from "./json.js";
+import { respondWithJSON } from "./json.js";
 import { BadRequestError } from "./errors.js";
-import { hashPassword } from "./auth.js";
-import { hash } from "bcrypt";
+import { hashPassword } from "../auth.js";
+
+export type UserResponse = Omit<NewUser, "hashedPassword">;
 
 export async function handlerCreateUser(req: Request, res: Response) {
   type Parameters = {
@@ -12,44 +13,26 @@ export async function handlerCreateUser(req: Request, res: Response) {
     password: string;
   };
 
-  type User = {
-    id: string;
-    email: string;
-    hashedPassword: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-
-  type UserResponse = Omit<User, "hashedPassword">;
-
   const params: Parameters = req.body;
   if (!params.email || !params.password) {
     throw new BadRequestError("Missing required fields");
   }
 
-  const hashedPassword = hashPassword(params.password);
-
-  console.log(hashedPassword);
-  if (!hashedPassword) {
-    respondWithError(res, 500, "Failed to hash password");
-    return;
-  }
+  const hashedPassword = await hashPassword(params.password);
 
   const user = await createUser({
     email: params.email,
     hashedPassword: hashedPassword,
-  });
+  } satisfies NewUser);
 
   if (!user) {
     throw new Error("Couldn't create user");
   }
 
-  const userResponse: UserResponse = {
+  respondWithJSON(res, 201, {
     id: user.id,
     email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-  };
-
-  respondWithJSON(res, 201, userResponse);
+  } satisfies UserResponse);
 }
