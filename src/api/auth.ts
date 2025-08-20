@@ -6,7 +6,7 @@ import { UserResponse } from "./users.js";
 import { checkPasswordHash, makeJWT } from "../auth.js";
 import { config } from "../config.js";
 
-interface UserResponseWithToken extends UserResponse {
+type LoginResponse = UserResponse & {
   token: string;
 }
 
@@ -14,7 +14,7 @@ export async function handlerLogin(req: Request, res: Response) {
   type parameter = {
     password: string;
     email: string;
-    expiresInSeconds: number
+    expiresIn?: number
   };
 
   const params: parameter = req.body;
@@ -31,23 +31,17 @@ export async function handlerLogin(req: Request, res: Response) {
     throw new UnauthorizedError("invalid username or password");
   }
 
-  let loginDuration = params.expiresInSeconds;
-  if (!loginDuration || loginDuration > 3600) {
-    loginDuration = 3600;
+  let duration = config.jwt.defaultDuration;
+  if (params.expiresIn && !(params.expiresIn > config.jwt.defaultDuration)) {
+    duration = params.expiresIn;
   }
-  const token = makeJWT(user.id, loginDuration, config.api.secret);
+  const accessToken = makeJWT(user.id, duration, config.jwt.secret);
 
-  const userResponse = {
+  respondWithJSON(res, 200, {
     id: user.id,
+    email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
-    email: user.email,
-  } satisfies UserResponse;
-
-  const loginResp: UserResponseWithToken = {
-    ...userResponse,
-    token: token,
-  };
-
-  respondWithJSON(res, 200, loginResp);
+    token: accessToken
+  } satisfies LoginResponse);
 }

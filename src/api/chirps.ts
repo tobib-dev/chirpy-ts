@@ -29,7 +29,6 @@ function validateChirps(body: string) {
 export async function handlerCreateChirp(req: Request, res: Response) {
   type Parameters = {
     body: string;
-    token: string;
   };
 
   const params: Parameters = req.body;
@@ -42,7 +41,7 @@ export async function handlerCreateChirp(req: Request, res: Response) {
   if (!token) {
     throw new UnauthorizedError("Couldn't get bearer token");
   }
-  const userId = validateJWT(token, config.api.secret)
+  const userId = validateJWT(token, config.jwt.secret)
   if (!userId) {
     throw new UnauthorizedError("Invalid token");
   }
