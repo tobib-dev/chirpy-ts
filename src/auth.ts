@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import { UnauthorizedError } from "./api/errors.js";
+import { BadRequestError, UnauthorizedError } from "./api/errors.js";
 
 const TOKEN_ISSUER = "chirpy";
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
@@ -46,4 +46,17 @@ export function validateJWT(tokenString: string, secret: string) {
   }
 
   return decoded.sub;
+}
+
+export function getBearerToken(req: Request) {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader) {
+    throw new BadRequestError("Malformed request");
+  }
+
+  const bearer = authHeader.split(" ");
+  if (bearer.length !== 2) {
+    throw new BadRequestError("Must contain bearer and token: <Bearer TOKEN_STRING>");
+  }
+  return bearer[0];
 }
