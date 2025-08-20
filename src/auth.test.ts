@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { hashPassword, checkPasswordHash, makeJWT, validateJWT } from "./auth";
+import { hashPassword, checkPasswordHash, makeJWT, validateJWT, getBearerToken } from "./auth";
 import { UnauthorizedError } from "./api/errors.js";
 
 describe("Password Hashing", () => {
@@ -64,5 +64,25 @@ describe("JWT Functions", () => {
     expect(() => validateJWT(validToken, wrongSecret)).toThrow(
       UnauthorizedError,
     );
+  });
+});
+
+describe("Bearer Token", () => {
+  const token = "VALID_TOKEN_STRING"
+  const mockHeader = {
+    Authorization: `Bearer ${token}`,
+  };
+  const mockRequest = {
+    get: (headerName: string) => {
+      if (headerName === "Authorization") {
+        return "Bearer VALID_TOKEN_STRING";
+      }
+      return undefined;
+    }
+  } as any;
+
+  it("should return the bearer token if header is intact", async () => {
+    const result = getBearerToken(mockRequest)
+    expect(result).toBe(token)
   });
 });

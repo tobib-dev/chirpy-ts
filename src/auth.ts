@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { Request } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { BadRequestError, UnauthorizedError } from "./api/errors.js";
 
@@ -49,7 +50,7 @@ export function validateJWT(tokenString: string, secret: string) {
 }
 
 export function getBearerToken(req: Request) {
-  const authHeader = req.headers.get("Authorization");
+  const authHeader = req.get("Authorization");
   if (!authHeader) {
     throw new BadRequestError("Malformed request");
   }
@@ -58,5 +59,5 @@ export function getBearerToken(req: Request) {
   if (bearer.length !== 2) {
     throw new BadRequestError("Must contain bearer and token: <Bearer TOKEN_STRING>");
   }
-  return bearer[0];
+  return bearer[1];
 }
