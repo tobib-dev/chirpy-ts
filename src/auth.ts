@@ -63,7 +63,7 @@ export function getBearerToken(req: Request) {
   return bearer[1];
 }
 
-export function makeRefreshToken(token: string) {
+export function makeRefreshToken() {
   const rBytes = randomBytes(32);
   return rBytes.toString("hex");
 }

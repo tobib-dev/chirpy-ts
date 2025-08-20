@@ -13,7 +13,7 @@ import {
   handlerGetAllChirps,
   handlerGetChirp,
 } from "./api/chirps.js";
-import { handlerLogin } from "./api/auth.js";
+import { handlerLogin, handlerRefreshToken, handlerRevoke } from "./api/auth.js";
 
 const app = express();
 const PORT = 8080;
@@ -52,6 +52,14 @@ app.get("/api/chirps", (req, res, next) => {
 app.get("/api/chirps/:chirpID", (req, res, next) => {
   Promise.resolve(handlerGetChirp(req, res)).catch(next);
 });
+
+app.post("/api/refresh", (req, res, next) => {
+  Promise.resolve(handlerRefreshToken(req, res)).catch(next);
+})
+
+app.post("/api/revoke", (req, res, next) => {
+  Promise.resolve(handlerRevoke(req, res)).catch(next);
+})
 
 app.use(middlewareErrorHandler);
 app.listen(PORT, () => {

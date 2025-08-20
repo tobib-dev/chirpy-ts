@@ -5,7 +5,7 @@ import { respondWithJSON } from "./json.js";
 import { UserResponse } from "./users.js";
 import { checkPasswordHash, getBearerToken, makeJWT, makeRefreshToken } from "../auth.js";
 import { config } from "../config.js";
-import { createRefreshToken, getRefreshToken } from "src/db/queries/refresh_tokens.js";
+import { createRefreshToken, getUserFromRefreshToken, revokeToken, saveRefreshToken } from "../db/queries/refresh_tokens.js";
 
 type LoginResponse = UserResponse & {
   token: string;
@@ -34,7 +34,7 @@ export async function handlerLogin(req: Request, res: Response) {
 
   let duration = config.jwt.defaultDuration;
   const accessToken = makeJWT(user.id, duration, config.jwt.secret);
-  const refreshToken = makeRefreshToken(accessToken);
+  const refreshToken = makeRefreshToken();
 
   const dbToken = await createRefreshToken({
     token: refreshToken,
@@ -54,10 +54,21 @@ export async function handlerLogin(req: Request, res: Response) {
 
 export async function handlerRefreshToken(req: Request, res: Response) {
   const accesToken = getBearerToken(req);
-  const dbToken = getRefreshToken(accesToken);
-  if (!dbToken) {
+  const dbToken = await getUserFromRefreshToken(accesToken);
+  if (!dbToken || dbToken.expiresAt < new Date(Date.now()) || dbToken.revoked_at) {
     throw new UnauthorizedError("Invalid token");
   }
 
-  respondWithJSON(res, 200, dbToken)
+  const newToken = makeJWT(dbToken.userId, config.jwt.defaultDuration, config.jwt.secret);
+
+  respondWithJSON(res, 200, {
+    token: newToken
+  });
+}
+
+export async function handlerRevoke(req: Request, res: Response) {
+  const accessToken = getBearerToken(req);
+  const dbToken = await getUserFromRefreshToken(accessToken);
+  await revokeToken(dbToken.token);
+  res.sendStatus(204);
 }
