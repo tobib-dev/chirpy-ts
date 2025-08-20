@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
-import { BadRequestError, NotFoundError } from "./errors.js";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "./errors.js";
 import { createChirp, getChirps, getChirp } from "../db/queries/chirps.js";
+import { getBearerToken, validateJWT } from "../auth.js";
+import { config } from "../config.js";
 
 function validateChirps(body: string) {
   const maxChirpLength = 140;
@@ -27,7 +29,7 @@ function validateChirps(body: string) {
 export async function handlerCreateChirp(req: Request, res: Response) {
   type Parameters = {
     body: string;
-    userId: string;
+    token: string;
   };
 
   const params: Parameters = req.body;
@@ -35,15 +37,21 @@ export async function handlerCreateChirp(req: Request, res: Response) {
   if (!params.body) {
     throw new BadRequestError("Missing required fields: body");
   }
-  if (!params.userId) {
-    throw new BadRequestError("Missing required fields: userId");
+
+  const token = getBearerToken(req);
+  if (!token) {
+    throw new UnauthorizedError("Couldn't get bearer token");
+  }
+  const userId = validateJWT(token, config.api.secret)
+  if (!userId) {
+    throw new UnauthorizedError("Invalid token");
   }
 
   const validatedChirps = validateChirps(params.body);
 
   const chirp = await createChirp({
     body: validatedChirps,
-    userId: params.userId,
+    userId: userId,
   });
 
   if (!chirp) {

@@ -4,7 +4,7 @@ import { UnauthorizedError } from "./errors.js";
 import { respondWithJSON } from "./json.js";
 import { UserResponse } from "./users.js";
 import { checkPasswordHash, makeJWT } from "../auth.js";
-import { config } from "src/config.js";
+import { config } from "../config.js";
 
 interface UserResponseWithToken extends UserResponse {
   token: string;
@@ -44,10 +44,10 @@ export async function handlerLogin(req: Request, res: Response) {
     email: user.email,
   } satisfies UserResponse;
 
-  const resonse: UserResponseWithToken = {
+  const loginResp: UserResponseWithToken = {
     ...userResponse,
     token: token,
   };
 
-  respondWithJSON(res, 200, response);
+  respondWithJSON(res, 200, loginResp);
 }
