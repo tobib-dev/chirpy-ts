@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
 import { Request } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { BadRequestError, UnauthorizedError } from "./api/errors.js";
@@ -56,8 +57,13 @@ export function getBearerToken(req: Request) {
   }
 
   const bearer = authHeader.split(" ");
-  if (bearer.length !== 2) {
+  if (bearer.length < 2 || bearer[0] !== "Bearer") {
     throw new BadRequestError("Must contain bearer and token: <Bearer TOKEN_STRING>");
   }
   return bearer[1];
+}
+
+export function makeRefreshToken(token: string) {
+  const rBytes = randomBytes(32);
+  return rBytes.toString("hex");
 }

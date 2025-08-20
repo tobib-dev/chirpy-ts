@@ -8,6 +8,7 @@ const migrationConfig: MigrationConfig = {
 type Config = {
   api: APIConfig;
   db: DBConfig;
+  jwt: JWTConfig;
 };
 
 type DBConfig = {
@@ -19,8 +20,13 @@ type APIConfig = {
   fileserverHits: number;
   port: number;
   platform: string;
-  secret: string;
 };
+
+type JWTConfig = {
+  defaultDuration: number;
+  secret: string;
+  issuer: string;
+}
 
 process.loadEnvFile();
 
@@ -37,10 +43,14 @@ export const config: Config = {
     fileserverHits: 0,
     port: Number(envOrThrow("PORT")),
     platform: envOrThrow("PLATFORM"),
-    secret: envOrThrow("SECRET"),
   },
   db: {
     url: envOrThrow("DB_URL"),
     migrationConfig: migrationConfig,
   },
+  jwt: {
+    defaultDuration: 60 * 60,
+    secret: envOrThrow("JWT_SECRET"),
+    issuer: "chirpy",
+  }
 };

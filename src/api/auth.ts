@@ -3,9 +3,9 @@ import { getUserByEmail } from "../db/queries/users.js";
 import { UnauthorizedError } from "./errors.js";
 import { respondWithJSON } from "./json.js";
 import { UserResponse } from "./users.js";
-import { checkPasswordHash, makeJWT, makeRefreshToken } from "../auth.js";
+import { checkPasswordHash, getBearerToken, makeJWT, makeRefreshToken } from "../auth.js";
 import { config } from "../config.js";
-import { createRefreshToken } from "src/db/queries/refresh_tokens.js";
+import { createRefreshToken, getRefreshToken } from "src/db/queries/refresh_tokens.js";
 
 type LoginResponse = UserResponse & {
   token: string;
@@ -50,4 +50,14 @@ export async function handlerLogin(req: Request, res: Response) {
     token: accessToken,
     refreshToken: refreshToken
   } satisfies LoginResponse);
+}
+
+export async function handlerRefreshToken(req: Request, res: Response) {
+  const accesToken = getBearerToken(req);
+  const dbToken = getRefreshToken(accesToken);
+  if (!dbToken) {
+    throw new UnauthorizedError("Invalid token");
+  }
+
+  respondWithJSON(res, 200, dbToken)
 }
