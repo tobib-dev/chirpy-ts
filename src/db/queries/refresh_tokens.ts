@@ -19,7 +19,7 @@ export async function getUserFromRefreshToken(token: string) {
 export async function saveRefreshToken(userId: string, newToken: string) {
   const [result] = await db.update(refresh_tokens)
   .set({ token: newToken, updatedAt: new Date() })
-  .where(eq(refresh_tokens.userId, userId))
+  .where(eq(refresh_tokens.userId, userId));
 }
 
 export async function revokeToken(token: string) {
