@@ -59,7 +59,7 @@ export async function handlerUpdateUser(req: Request, res: Response) {
     throw new NotFoundError("User not found");
   }
 
-  const updatedUser = await updateUser(userId, hashedPassword);
+  const updatedUser = await updateUser(userId, params.email, hashedPassword);
   respondWithJSON(res, 200, {
     id: updatedUser.id,
     createdAt: updatedUser.createdAt,
