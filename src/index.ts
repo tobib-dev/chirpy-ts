@@ -12,6 +12,7 @@ import {
   handlerCreateChirp,
   handlerGetAllChirps,
   handlerGetChirp,
+  handlerDeleteChirps,
 } from "./api/chirps.js";
 import { handlerLogin, handlerRefreshToken, handlerRevoke } from "./api/auth.js";
 
@@ -52,6 +53,10 @@ app.get("/api/chirps", (req, res, next) => {
 app.get("/api/chirps/:chirpID", (req, res, next) => {
   Promise.resolve(handlerGetChirp(req, res)).catch(next);
 });
+
+app.delete("/api/chirps/:chirpID", (req, res, next) => {
+  Promise.resolve(handlerDeleteChirps(req, res)).catch(next);
+})
 
 app.post("/api/refresh", (req, res, next) => {
   Promise.resolve(handlerRefreshToken(req, res)).catch(next);
