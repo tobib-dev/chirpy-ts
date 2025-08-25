@@ -82,12 +82,16 @@ export async function handlerDeleteChirps(req: Request, res: Response) {
   const userId = validateJWT(token, config.jwt.secret);
   const chirp = await getChirp(chirpID);
   if (!chirp) {
-    throw new NotFoundError("Chirp not found");
+    throw new NotFoundError(`Chirp with chirpId: ${chirpID} not found`);
   }
   if (chirp.userId !== userId) {
-    throw new ForbiddenError("This operation is only available to chirp author");
+    throw new ForbiddenError("You can't delete this chirp");
   }
 
-  await deleteChirp(chirpID);
-  respondWithJSON(res, 204, {});
+  const deleted = await deleteChirp(chirpID);
+  if (!deleted) {
+    throw new Error(`Failed to dlete chirp with chirpId: ${chirpID}`);
+  }
+  
+  res.status(204).send();
 }

@@ -27,7 +27,7 @@ export async function getUserById(id: string) {
 
 export async function updateUser(id: string, email: string, password: string) {
   const [result] = await db.update(users)
-    .set({ email: email, hashedPassword: password, updatedAt: new Date(Date.now() )})
+    .set({ email: email, hashedPassword: password})
     .where(eq(users.id, id))
     .returning();
   return result;

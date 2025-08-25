@@ -54,16 +54,11 @@ export async function handlerUpdateUser(req: Request, res: Response) {
     throw new UnauthorizedError("Invalid token");
   }
 
-  const user = await getUserById(userId);
-  if (!user) {
-    throw new NotFoundError("User not found");
-  }
-
-  const updatedUser = await updateUser(userId, params.email, hashedPassword);
+  const user = await updateUser(userId, params.email, hashedPassword);
   respondWithJSON(res, 200, {
-    id: updatedUser.id,
-    createdAt: updatedUser.createdAt,
-    updatedAt: updatedUser.updatedAt,
-    email: updatedUser.email,
+    id: user.id,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    email: user.email,
   } satisfies UserResponse);
 }
