@@ -7,7 +7,7 @@ import {
 } from "./api/middleware.js";
 import { handlerMetrics } from "./admin/metrics.js";
 import { handlerReset } from "./admin/reset.js";
-import { handlerCreateUser, handlerUpdateUser, handlerUpgradeUser } from "./api/users.js";
+import { handlerCreateUser, handlerUpdateUser} from "./api/users.js";
 import {
   handlerCreateChirp,
   handlerGetAllChirps,
@@ -15,6 +15,7 @@ import {
   handlerDeleteChirps,
 } from "./api/chirps.js";
 import { handlerLogin, handlerRefreshToken, handlerRevoke } from "./api/auth.js";
+import { handlerWebhook } from "./api/webhook.js";
 
 const app = express();
 const PORT = 8080;
@@ -71,7 +72,7 @@ app.post("/api/revoke", (req, res, next) => {
 })
 
 app.post("/api/polka/webhooks", (req, res, next) => {
-  Promise.resolve(handlerUpgradeUser(req, res)).catch(next);
+  Promise.resolve(handlerWebhook(req, res)).catch(next);
 })
 
 app.use(middlewareErrorHandler);

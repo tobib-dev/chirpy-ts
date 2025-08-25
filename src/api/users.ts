@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { createUser, getUserById, updateUser, upgradeUser } from "../db/queries/users.js";
+import { createUser, updateUser } from "../db/queries/users.js";
 import { NewUser } from "../db/schema.js";
-import { respondWithError, respondWithJSON } from "./json.js";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "./errors.js";
+import { respondWithJSON } from "./json.js";
+import { BadRequestError, UnauthorizedError } from "./errors.js";
 import { getBearerToken, hashPassword, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 
@@ -63,25 +63,4 @@ export async function handlerUpdateUser(req: Request, res: Response) {
     email: user.email,
     isChirpyRed: user.isChirpyRed,
   } satisfies UserResponse);
-}
-
-export async function handlerUpgradeUser(req: Request, res: Response) {
-  type parameters = {
-    event: string;
-    data: {
-      userId: string;
-    }
-  }
-
-  const params: parameters = req.body;
-  if (params.event !== "user.upgraded") {
-    respondWithError(res, 204, "Event not upgraded");
-    return;
-  }
-  const user = await upgradeUser(params.data.userId);
-  if (!user) {
-    respondWithError(res, 404, "User not found");
-    return;
-  }
-  res.status(204).send();
 }
