@@ -36,6 +36,20 @@
       "when": 1755722897073,
       "tag": "0004_small_micromacro",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1756080438331,
+      "tag": "0005_pretty_chronomancer",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1756080574892,
+      "tag": "0006_lame_blade",
+      "breakpoints": true
     }
   ]
 }
