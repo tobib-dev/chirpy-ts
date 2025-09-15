@@ -58,7 +58,9 @@ export function getBearerToken(req: Request) {
 
   const bearer = authHeader.split(" ");
   if (bearer.length < 2 || bearer[0] !== "Bearer") {
-    throw new UnauthorizedError("Must contain bearer and token: <Bearer TOKEN_STRING>");
+    throw new UnauthorizedError(
+      "Must contain bearer and token: <Bearer TOKEN_STRING>",
+    );
   }
   return bearer[1];
 }
@@ -66,4 +68,19 @@ export function getBearerToken(req: Request) {
 export function makeRefreshToken() {
   const rBytes = randomBytes(32);
   return rBytes.toString("hex");
+}
+
+export function getAPIKey(req: Request) {
+  const authHeader = req.get("Authorization");
+  if (!authHeader) {
+    throw new UnauthorizedError("No API key provided");
+  }
+
+  const apiKey = authHeader.split(" ");
+  if (apiKey.length < 2 || apiKey[0] !== "ApiKey") {
+    throw new UnauthorizedError(
+      "Must contain ApiKey and token: <ApiKey TOKEN_STRING>",
+    );
+  }
+  return apiKey[1];
 }

@@ -20,13 +20,14 @@ type APIConfig = {
   fileserverHits: number;
   port: number;
   platform: string;
+  polkaKey: string;
 };
 
 type JWTConfig = {
   defaultDuration: number;
   secret: string;
   issuer: string;
-}
+};
 
 process.loadEnvFile();
 
@@ -43,6 +44,7 @@ export const config: Config = {
     fileserverHits: 0,
     port: Number(envOrThrow("PORT")),
     platform: envOrThrow("PLATFORM"),
+    polkaKey: envOrThrow("POLKA_KEY"),
   },
   db: {
     url: envOrThrow("DB_URL"),
@@ -52,5 +54,5 @@ export const config: Config = {
     defaultDuration: 60 * 60,
     secret: envOrThrow("JWT_SECRET"),
     issuer: "chirpy",
-  }
+  },
 };
