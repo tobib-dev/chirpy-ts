@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
 import { Request } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import { UnauthorizedError } from "./api/errors.js";
+import { BadRequestError, UnauthorizedError } from "./api/errors.js";
 
 const TOKEN_ISSUER = "chirpy";
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
@@ -58,7 +58,7 @@ export function getBearerToken(req: Request) {
 
   const bearer = authHeader.split(" ");
   if (bearer.length < 2 || bearer[0] !== "Bearer") {
-    throw new UnauthorizedError(
+    throw new BadRequestError(
       "Must contain bearer and token: <Bearer TOKEN_STRING>",
     );
   }
@@ -75,10 +75,13 @@ export function getAPIKey(req: Request) {
   if (!authHeader) {
     throw new UnauthorizedError("No API key provided");
   }
+  return extractApiKey(authHeader);
+}
 
-  const apiKey = authHeader.split(" ");
+export function extractApiKey(header: string) {
+  const apiKey = header.split(" ");
   if (apiKey.length < 2 || apiKey[0] !== "ApiKey") {
-    throw new UnauthorizedError(
+    throw new BadRequestError(
       "Must contain ApiKey and token: <ApiKey TOKEN_STRING>",
     );
   }

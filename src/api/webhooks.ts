@@ -3,6 +3,7 @@ import { respondWithError } from "./json.js";
 import { upgradeUser } from "../db/queries/users.js";
 import { getAPIKey } from "../auth.js";
 import { config } from "../config.js";
+import { UnauthorizedError } from "./errors.js";
 
 export async function handlerWebhook(req: Request, res: Response) {
   type parameters = {
@@ -11,10 +12,10 @@ export async function handlerWebhook(req: Request, res: Response) {
       userId: string;
     };
   };
-  const apiKey = getAPIKey(req);
+
+  let apiKey = getAPIKey(req);
   if (apiKey !== config.api.polkaKey) {
-    respondWithError(res, 401, "Invalid API key");
-    return;
+    throw new UnauthorizedError("invalid api key");
   }
 
   const params: parameters = req.body;
