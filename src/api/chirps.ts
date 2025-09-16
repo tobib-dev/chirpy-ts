@@ -11,7 +11,6 @@ import {
   getChirps,
   getChirp,
   deleteChirp,
-  getChirpsByAuthorId,
 } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
@@ -72,32 +71,29 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 }
 
 export async function handlerGetAllChirps(req: Request, res: Response) {
+  const chirps = await getChirps();
   let authorId = "";
   let authorIdQuery = req.query.authorId;
   if (typeof authorIdQuery === "string") {
     authorId = authorIdQuery;
   }
 
-  let sort = "";
-  let sortQuery = req.query.sort;
-  if (typeof sortQuery === "string") {
-    sort = sortQuery;
+  let sortDirection = "asc";
+  let sortDirectionParam = req.query.sort;
+  if (sortDirectionParam === "desc") {
+    sortDirection = sortDirectionParam;
   }
 
-  if (authorId !== "" && sort !== "") {
-    const chirps = await getChirpsByAuthorId(authorId);
+  const filteredChirps = chirps.filter(
+    (chirp) => chirp.userId === authorId || authorId === "",
+  );
+  filteredChirps.sort((a, b) =>
+    sortDirection === "asc"
+      ? a.createdAt.getTime() - b.createdAt.getTime()
+      : b.createdAt.getTime() - a.createdAt.getTime(),
+  );
 
-    if (sort === "desc") {
-      chirps.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    }
-    return respondWithJSON(res, 200, chirps);
-  }
-
-  const chirps = await getChirps();
-  if (sort === "desc") {
-    chirps.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  }
-  return respondWithJSON(res, 200, chirps);
+  return respondWithJSON(res, 200, filteredChirps);
 }
 
 export async function handlerGetChirp(req: Request, res: Response) {
