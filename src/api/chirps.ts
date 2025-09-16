@@ -1,7 +1,18 @@
 import { Request, Response } from "express";
 import { respondWithJSON } from "./json.js";
-import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "./errors.js";
-import { createChirp, getChirps, getChirp, deleteChirp } from "../db/queries/chirps.js";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "./errors.js";
+import {
+  createChirp,
+  getChirps,
+  getChirp,
+  deleteChirp,
+  getChirpsByAuthorId,
+} from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../auth.js";
 import { config } from "../config.js";
 
@@ -41,7 +52,7 @@ export async function handlerCreateChirp(req: Request, res: Response) {
   if (!token) {
     throw new UnauthorizedError("Couldn't get bearer token");
   }
-  const userId = validateJWT(token, config.jwt.secret)
+  const userId = validateJWT(token, config.jwt.secret);
   if (!userId) {
     throw new UnauthorizedError("Invalid token");
   }
@@ -60,7 +71,18 @@ export async function handlerCreateChirp(req: Request, res: Response) {
   respondWithJSON(res, 201, chirp);
 }
 
-export async function handlerGetAllChirps(_: Request, res: Response) {
+export async function handlerGetAllChirps(req: Request, res: Response) {
+  let authorId = "";
+  let authorIdQuery = req.query.authorId;
+  if (typeof authorIdQuery === "string") {
+    authorId = authorIdQuery;
+  }
+
+  if (authorId !== "") {
+    const chirps = await getChirpsByAuthorId(authorId);
+    return respondWithJSON(res, 200, chirps);
+  }
+
   const chirps = await getChirps();
   return respondWithJSON(res, 200, chirps);
 }
@@ -92,6 +114,6 @@ export async function handlerDeleteChirps(req: Request, res: Response) {
   if (!deleted) {
     throw new Error(`Failed to dlete chirp with chirpId: ${chirpID}`);
   }
-  
+
   res.status(204).send();
 }

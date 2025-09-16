@@ -27,3 +27,11 @@ export async function deleteChirp(id: string) {
   const rows = await db.delete(chirps).where(eq(chirps.id, id)).returning();
   return rows.length > 0;
 }
+
+export async function getChirpsByAuthorId(authorId: string) {
+  return db
+    .select()
+    .from(chirps)
+    .where(eq(chirps.userId, authorId))
+    .orderBy(asc(chirps.createdAt));
+}
